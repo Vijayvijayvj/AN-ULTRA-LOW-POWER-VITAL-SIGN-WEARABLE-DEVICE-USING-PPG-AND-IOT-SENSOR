@@ -1,0 +1,48 @@
+#include <SoftwareSerial.h>
+#include<LiquidCrystal.h>
+LiquidCrystal lcd(13,12,11,10,9,8);
+
+void setup()
+{
+  lcd.begin(16,2);
+  pinMode(A0, INPUT);
+  pinMode(3, OUTPUT);  
+  Serial.begin(9600);    // Setting the baud rate of Serial Monitor (Arduino)
+  lcd.setCursor(0,0);
+  lcd.print("Welcome!");
+  delay(2000);
+}
+
+
+void loop()
+{
+  int ppg, Ppg;
+  ppg = analogRead(A0);
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("Pulse");
+  lcd.setCursor(0,1);
+  lcd.print(Ppg);
+  delay(1000);
+  if((Ppg < 50) || (Ppg > 100))
+ {
+  mySerial.println("AT+CMGF=1");    //Sets the GSM Module in Text Mode
+  delay(1000);  // Delay of 1000 milli seconds or 1 second
+  mySerial.println("AT+CMGS=\"+919790331832\"\r"); // Replace x with mobile number
+  delay(1000);
+  mySerial.println("Alert, requires attention!");// The SMS text you want to send
+  delay(100);
+   mySerial.println((char)26);// ASCII code of CTRL+Z
+  delay(1000);
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("Alert! Person");
+  lcd.setCursor(0,1);
+  lcd.print("requires attention!");
+  digitalWrite(3, HIGH);
+  delay(1000);
+  digitalWrite(3, LOW);
+  delay(500);
+}
+
+}
